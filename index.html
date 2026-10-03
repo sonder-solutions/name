@@ -188,6 +188,53 @@
         height: 18px;
       }
 
+      .pronounce-btn {
+        position: absolute;
+        top: 0.6rem;
+        right: 3.8rem;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(100, 149, 237, 0.1);
+        color: #6495ed;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, transform 0.1s;
+        padding: 0;
+      }
+
+      .pronounce-btn:hover {
+        background: rgba(100, 149, 237, 0.2);
+      }
+
+      .pronounce-btn:active {
+        transform: scale(0.95);
+      }
+
+      .pronounce-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .pronounce-btn.speaking {
+        background: rgba(100, 149, 237, 0.3);
+        animation: pulse 1s ease-in-out infinite;
+      }
+
+      .pronounce-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+      }
+
       .cuneiform-output {
         font-family: 'Noto Sans Cuneiform', serif;
         font-size: 3rem;
