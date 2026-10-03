@@ -49,10 +49,12 @@ const CONSONANT_MAP = {
   'ɾ':  'r',   // alveolar tap → r
 
   // Affricates → closest Akkadian equivalent
-  'tʃ': 's',   // voiceless postalveolar affricate → s
-  'dʒ': 'z',   // voiced postalveolar affricate → z
-  'ʧ':  's',   // alternative IPA for tʃ
-  'ʤ':  'z',   // alternative IPA for dʒ
+  // Use 'y' (yod) for affricates - more historically accurate for Semitic adaptation
+  // (similar to how Hebrew adapted foreign "j" sounds to "y": Joshua → Yehoshua)
+  'tʃ': 'y',   // voiceless postalveolar affricate → y
+  'dʒ': 'y',   // voiced postalveolar affricate → y
+  'ʧ':  'y',   // alternative IPA for tʃ
+  'ʤ':  'y',   // alternative IPA for dʒ
 
   // Fallback for non-IPA characters (from simplified G2P)
   'c':  'k',   // Latin 'c' → k (hard c sound)
