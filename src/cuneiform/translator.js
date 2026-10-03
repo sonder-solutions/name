@@ -30,13 +30,27 @@ export function translateToCuneiform(ipaString, options = {}) {
   // Step 1: Parse IPA string into individual phonemes
   const ipaPhonemes = parseIPA(ipaString);
 
-  // Step 2: Map each phoneme to Akkadian equivalent
+  // Step 2: Map each phoneme to Akkadian equivalent with context-sensitive rules
   const akkadianPhonemes = [];
-  for (const phoneme of ipaPhonemes) {
-    const mapped = mapPhoneme(phoneme);
+  let prevIpaPhoneme = null;
+
+  for (let i = 0; i < ipaPhonemes.length; i++) {
+    const phoneme = ipaPhonemes[i];
+    let mapped = mapPhoneme(phoneme);
+
     if (mapped) {
+      // Context-sensitive rule: after affricates (dʒ/tʃ → y), map ɒ to 'u' instead of 'a'
+      // This preserves the "o" sound in J-names: Jovi → yu.bi instead of ya.bi
+      if (prevIpaPhoneme && (prevIpaPhoneme === 'dʒ' || prevIpaPhoneme === 'tʃ' ||
+                             prevIpaPhoneme === 'ʤ' || prevIpaPhoneme === 'ʧ') &&
+          phoneme === 'ɒ' && mapped.type === 'V' && mapped.value === 'a') {
+        mapped = { type: 'V', value: 'u' };
+      }
+
       akkadianPhonemes.push(mapped);
     }
+
+    prevIpaPhoneme = phoneme;
   }
 
   // Step 3: Syllabify
