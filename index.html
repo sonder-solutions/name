@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/name/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cuneiform Name Translator</title>
+
+    <!-- Noto Sans Cuneiform font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Cuneiform&display=swap" rel="stylesheet">
+
+    <!-- Regular font for UI -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-user-select: none;
+      }
+
+      input[type="text"] {
+        user-select: text;
+        -webkit-user-select: text;
+      }
+
+      body {
+        font-family: 'Inter', sans-serif;
+        background: #1a1a2e;
+        color: #e0e0e0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem 1rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: #f0c040;
+      }
+
+      .subtitle {
+        color: #888;
+        margin-bottom: 2rem;
+        font-size: 0.9rem;
+      }
+
+      .container {
+        max-width: 600px;
+        width: 100%;
+      }
+
+      .input-group {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      input[type="text"] {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 2px solid #333;
+        border-radius: 8px;
+        background: #16213e;
+        color: #fff;
+        font-size: 1rem;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+
+      input[type="text"]:focus {
+        border-color: #f0c040;
+      }
+
+      button {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        background: #f0c040;
+        color: #1a1a2e;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      button:hover {
+        background: #e0b030;
+      }
+
+      button:disabled {
+        background: #555;
+        cursor: not-allowed;
+      }
+
+      .gender-select {
+        display: flex;
+        margin-bottom: 1.5rem;
+        background: #16213e;
+        border-radius: 8px;
+        padding: 4px;
+        position: relative;
+      }
+
+      .gender-select input[type="radio"] {
+        display: none;
+      }
+
+      .gender-select label {
+        flex: 1;
+        text-align: center;
+        padding: 0.6rem 1rem;
+        cursor: pointer;
+        color: #888;
+        font-size: 0.9rem;
+        font-weight: 500;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        position: relative;
+        z-index: 1;
+      }
+
+      .gender-select label:hover {
+        color: #aaa;
+      }
+
+      .gender-select input[type="radio"]:checked + label {
+        color: #000;
+        background: #f0c040;
+        font-weight: 700;
+        box-shadow: 0 0 0 2px #f0c040;
+      }
+
+      .output-area {
+        background: #16213e;
+        border: 2px solid #333;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        min-height: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .copy-btn {
+        position: absolute;
+        top: 0.6rem;
+        right: 0.6rem;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(240, 192, 64, 0.1);
+        color: #f0c040;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, transform 0.1s;
+        padding: 0;
+      }
+
+      .copy-btn:hover {
+        background: rgba(240, 192, 64, 0.2);
+      }
+
+      .copy-btn:active {
+        transform: scale(0.95);
+      }
+
+      .copy-btn.copied {
+        background: rgba(80, 200, 120, 0.2);
+        color: #50c878;
+      }
+
+      .copy-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .pronounce-btn {
+        position: absolute;
+        top: 0.6rem;
+        right: 3.8rem;
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(100, 149, 237, 0.1);
+        color: #6495ed;
+        font-size: 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.2s, transform 0.1s;
+        padding: 0;
+      }
+
+      .pronounce-btn:hover {
+        background: rgba(100, 149, 237, 0.2);
+      }
+
+      .pronounce-btn:active {
+        transform: scale(0.95);
+      }
+
+      .pronounce-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      .pronounce-btn.speaking {
+        background: rgba(100, 149, 237, 0.3);
+        animation: pulse 1s ease-in-out infinite;
+      }
+
+      .pronounce-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
+      }
+
+      .cuneiform-output {
+        font-family: 'Noto Sans Cuneiform', serif;
+        font-size: 3rem;
+        line-height: 1.5;
+        direction: ltr;
+        word-spacing: 1rem;
+        letter-spacing: 0.3rem;
+        color: #f0c040;
+        min-height: 4rem;
+      }
+
+      .placeholder-text {
+        color: #555;
+        font-family: 'Inter', sans-serif;
+        font-size: 1rem;
+      }
+
+      .details {
+        margin-top: 1rem;
+        width: 100%;
+        text-align: left;
+      }
+
+      .details summary {
+        cursor: pointer;
+        color: #888;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .details-content {
+        font-size: 0.85rem;
+        color: #aaa;
+        line-height: 1.6;
+      }
+
+      .details-content .label {
+        color: #666;
+        font-weight: 500;
+      }
+
+      .loading {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #888;
+      }
+
+      .spinner {
+        width: 20px;
+        height: 20px;
+        border: 2px solid #333;
+        border-top-color: #f0c040;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .status-bar {
+        margin-top: 1rem;
+        font-size: 0.8rem;
+        color: #666;
+        text-align: center;
+      }
+    </style>
+    <script type="module" crossorigin src="/name/assets/index-CfDGxW8w.js"></script>
+  </head>
+  <body>
+    <h1>𒀭 Cuneiform Name Translator</h1>
+    <p class="subtitle">Write your name in ancient cuneiform script</p>
+
+    <div class="container">
+      <div class="gender-select">
+        <input type="radio" id="gender-male" name="gender" value="male" checked />
+        <label for="gender-male">Male (𒁹 DISH)</label>
+        <input type="radio" id="gender-female" name="gender" value="female" />
+        <label for="gender-female">Female (𒊩 MUNUS)</label>
+      </div>
+
+      <div class="input-group">
+        <input type="text" id="name-input" placeholder="Enter your name..." autocomplete="off" />
+        <button id="translate-btn">Translate</button>
+      </div>
+
+      <div class="output-area" id="output-area">
+        <span class="placeholder-text">Your name will appear here in cuneiform</span>
+      </div>
+
+      <div class="status-bar" id="status-bar"></div>
+    </div>
+
+  </body>
+</html>
