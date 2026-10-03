@@ -137,73 +137,108 @@ class G2PEngine {
   ruleBasedG2P(word) {
     let result = word.toLowerCase();
 
-    // Common patterns (apply in order)
-    const rules = [
-      // Vowel combinations
-      [/tion$/g, 'ʃən'],
-      [/sion$/g, 'ʒən'],
-      [/eous$/g, 'iəs'],
-      [/ious$/g, 'iəs'],
-      [/ight$/g, 'aɪt'],
-      [/eigh$/g, 'eɪ'],
-      [/augh$/g, 'ɔː'],
-      [/ough$/g, 'ʌf'],
+    // Process character by character, checking for digraphs first
+    let output = '';
+    let i = 0;
 
-      // Consonant combinations
-      [/th/g, 'θ'],
-      [/sh/g, 'ʃ'],
-      [/ch/g, 'tʃ'],
-      [/ph/g, 'f'],
-      [/wh/g, 'w'],
-      [/ng$/g, 'ŋ'],
-      [/ck/g, 'k'],
-      [/gh/g, ''],
+    while (i < result.length) {
+      let matched = false;
 
-      // Single vowels
-      [/a([^aeiou]*)e/g, 'eɪ$1'],  // a_e pattern
-      [/e([^aeiou]*)e/g, 'iː$1'],  // e_e pattern
-      [/i([^aeiou]*)e/g, 'aɪ$1'],  // i_e pattern
-      [/o([^aeiou]*)e/g, 'oʊ$1'],  // o_e pattern
-      [/u([^aeiou]*)e/g, 'juː$1'], // u_e pattern
+      // Check for 2-character digraphs first
+      if (i < result.length - 1) {
+        const twoChar = result.substring(i, i + 2);
+        const digraphMap = {
+          'ou': 'uː',
+          'oo': 'uː',
+          'ea': 'iː',
+          'ee': 'iː',
+          'ai': 'eɪ',
+          'ay': 'eɪ',
+          'ie': 'aɪ',
+          'oa': 'oʊ',
+          'th': 'θ',
+          'sh': 'ʃ',
+          'ch': 'tʃ',
+          'ph': 'f',
+          'wh': 'w',
+          'ck': 'k',
+          'ng': 'ŋ',
+          'gh': '',
+        };
 
-      // Default vowel sounds
-      [/a/g, 'æ'],
-      [/e/g, 'ɛ'],
-      [/i/g, 'ɪ'],
-      [/o/g, 'ɒ'],
-      [/u/g, 'ʌ'],
+        if (digraphMap[twoChar] !== undefined) {
+          output += digraphMap[twoChar];
+          i += 2;
+          matched = true;
+        }
+      }
 
-      // Consonants (most stay the same)
-      [/b/g, 'b'],
-      [/d/g, 'd'],
-      [/f/g, 'f'],
-      [/g/g, 'ɡ'],
-      [/h/g, 'h'],
-      [/j/g, 'dʒ'],
-      [/k/g, 'k'],
-      [/l/g, 'l'],
-      [/m/g, 'm'],
-      [/n/g, 'n'],
-      [/p/g, 'p'],
-      [/qu/g, 'kw'],
-      [/r/g, 'r'],
-      [/s/g, 's'],
-      [/t/g, 't'],
-      [/v/g, 'v'],
-      [/w/g, 'w'],
-      [/x/g, 'ks'],
-      [/y/g, 'j'],
-      [/z/g, 'z'],
-    ];
+      // Check for magic-e patterns (vowel + consonant + e at word end)
+      if (!matched && i < result.length - 2) {
+        const vowel = result[i];
+        const consonant = result[i + 1];
+        const finalE = result[i + 2];
 
-    for (const [pattern, replacement] of rules) {
-      result = result.replace(pattern, replacement);
+        if (finalE === 'e' && i + 2 === result.length - 1 && !'aeiou'.includes(consonant)) {
+          const magicEMap = {
+            'a': 'eɪ',
+            'e': 'iː',
+            'i': 'aɪ',
+            'o': 'oʊ',
+            'u': 'juː',
+          };
+
+          if (magicEMap[vowel]) {
+            output += magicEMap[vowel] + consonant;
+            i += 3; // Skip vowel + consonant + e
+            matched = true;
+          }
+        }
+      }
+
+      // Single character fallback
+      if (!matched) {
+        const char = result[i];
+        const singleMap = {
+          'a': 'æ',
+          'e': 'ɛ',
+          'i': 'ɪ',
+          'o': 'ɒ',
+          'u': 'ʌ',
+          'b': 'b',
+          'd': 'd',
+          'f': 'f',
+          'g': 'ɡ',
+          'h': 'h',
+          'j': 'dʒ',
+          'k': 'k',
+          'l': 'l',
+          'm': 'm',
+          'n': 'n',
+          'p': 'p',
+          'r': 'r',
+          's': 's',
+          't': 't',
+          'v': 'v',
+          'w': 'w',
+          'x': 'ks',
+          'y': 'j',
+          'z': 'z',
+          'q': 'k',
+        };
+
+        if (singleMap[char] !== undefined) {
+          output += singleMap[char];
+        }
+        i++;
+      }
     }
 
-    // Clean up any remaining letters
-    result = result.replace(/[^a-zɪɛæʌɒʊəθðʃʒŋː]/g, '');
+    // Handle common suffixes
+    output = output.replace(/ʃən$/, 'ʃən'); // tion
+    output = output.replace(/ʒən$/, 'ʒən'); // sion
 
-    return result || word; // Return original if conversion failed
+    return output || word;
   }
 
   /**
